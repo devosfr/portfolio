@@ -4,10 +4,11 @@ import { TecnologiaPrisma } from "./tecnologia.prisma"
 
 @Controller("tecnologias")
 export class TecnologiaController {
-	constructor(private readonly repo: TecnologiaPrisma) {}
+	constructor(private readonly repo: TecnologiaPrisma) { }
 
 	@Get()
 	async obterTodas(): Promise<Tecnologia[]> {
+		debugger
 		return this.repo.obterTodas()
 	}
 

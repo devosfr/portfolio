@@ -1,4 +1,4 @@
-POST https://suporteformacaodev.app.n8n.cloud/webhook/assistente-pessoal
+POST https://oseiasfreitas.app.n8n.cloud/webhook-test/assistente-pessoal
 Content-Type: application/json
 
 {
