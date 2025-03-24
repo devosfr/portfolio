@@ -12,36 +12,66 @@
 # https://www.bretfisher.com/node-docker-good-defaults/
 # http://goldbergyoni.com/checklist-best-practice-of-node-js-in-production/
 
-FROM node:20-alpine as builder
+# FROM node:20-alpine as builder
 
-ENV NODE_ENV build
+# ENV NODE_ENV build
 
-USER node
-WORKDIR /home/node
+# USER node
+# WORKDIR /home/node
 
-COPY package*.json ./
-RUN npm ci
+# COPY package*.json ./
+# RUN npm ci
 
-COPY --chown=node:node . .
-RUN npx prisma generate \
-    && npm run build \
-    && npm prune --omit=dev
+# COPY --chown=node:node . .
+# RUN npx prisma generate \
+#     && npm run build \
+#     && npm prune --omit=dev
 
-# ---
+# # ---
 
-FROM node:20-alpine
+# FROM node:20-alpine
 
-ENV NODE_ENV production
+# ENV NODE_ENV production
 
-USER node
-WORKDIR /home/node
+# USER node
+# WORKDIR /home/node
 
-COPY --from=builder --chown=node:node /home/node/package*.json ./
-COPY --from=builder --chown=node:node /home/node/node_modules/ ./node_modules/
-COPY --from=builder --chown=node:node /home/node/dist/ ./dist/
-COPY --from=builder --chown=node:node /home/node/prisma/ ./prisma/
+# COPY --from=builder --chown=node:node /home/node/package*.json ./
+# COPY --from=builder --chown=node:node /home/node/node_modules/ ./node_modules/
+# COPY --from=builder --chown=node:node /home/node/dist/ ./dist/
+# COPY --from=builder --chown=node:node /home/node/prisma/ ./prisma/
+
+# # Expõe a porta correta
+# EXPOSE 8080
+# Usa Node.js otimizado
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Copia os arquivos essenciais primeiro para otimizar cache
+COPY package.json package-lock.json ./
+RUN npm install --only=production
+
+# Copia o restante do código
+COPY . .
+
+# Compila a aplicação NestJS
+RUN npm run build
+
+# Cria uma imagem menor para execução
+FROM node:18-alpine AS runner
+
+WORKDIR /app
+
+# Copia apenas os arquivos necessários
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+
+# Define a variável de ambiente corretamente
+ENV NODE_ENV=production
+ENV PORT=${PORT} 
 
 # Expõe a porta correta
-EXPOSE 8080
+EXPOSE 8080 
 
 CMD ["node", "dist/backend/src/main.js"]
