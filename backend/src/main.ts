@@ -4,10 +4,10 @@ import { AppModule } from "./app.module"
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule)
 
-	// Use process.env.PORT para a variável que o Railway usa
-	const port = process.env.PORT || 8080 // Se process.env.PORT não estiver definida, usará a porta 8080
+	// Usar a variável de ambiente PORT do Railway ou 4000 se estiver local
+	const port = process.env.PORT || 4000 // 4000 como fallback para o ambiente local
 
-	await app.listen(port, "0.0.0.0") // Certifique-se de ouvir na porta 0.0.0.0
+	await app.listen(port, "0.0.0.0") // Escute em 0.0.0.0 para permitir conexões externas
 	console.log(`🚀 Server running on port ${port}`)
 }
 bootstrap()
