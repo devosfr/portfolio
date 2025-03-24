@@ -41,4 +41,10 @@ COPY --from=builder --chown=node:node /home/node/node_modules/ ./node_modules/
 COPY --from=builder --chown=node:node /home/node/dist/ ./dist/
 COPY --from=builder --chown=node:node /home/node/prisma/ ./prisma/
 
+# Expõe a porta correta
+EXPOSE 3000
+
+# Define a variável de ambiente
+ENV PORT=3000
+
 CMD ["node", "dist/backend/src/main.js"]
